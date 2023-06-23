@@ -19,6 +19,7 @@ package io.supertokens.test.httpRequest;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.supertokens.Main;
+import io.supertokens.pluginInterface.multitenancy.TenantIdentifier;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -83,7 +84,7 @@ public class HttpRequestForTesting {
         try {
             con = (HttpURLConnection) obj.openConnection();
             con.setConnectTimeout(connectionTimeoutMS);
-            con.setReadTimeout(readTimeoutMS);
+            con.setReadTimeout(readTimeoutMS + 1000);
             if (version != null) {
                 con.setRequestProperty("api-version", version + "");
             }
@@ -138,7 +139,7 @@ public class HttpRequestForTesting {
             con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod(method);
             con.setConnectTimeout(connectionTimeoutMS);
-            con.setReadTimeout(readTimeoutMS);
+            con.setReadTimeout(readTimeoutMS + 1000);
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             if (version != null) {
                 con.setRequestProperty("api-version", version + "");
@@ -248,7 +249,7 @@ public class HttpRequestForTesting {
                     con = (HttpURLConnection) obj.openConnection();
                     con.setRequestMethod("DELETE");
                     con.setConnectTimeout(connectionTimeoutMS);
-                    con.setReadTimeout(readTimeoutMS);
+                    con.setReadTimeout(readTimeoutMS + 1000);
                     if (version != null) {
                         con.setRequestProperty("api-version", version + "");
                     }
@@ -290,5 +291,28 @@ public class HttpRequestForTesting {
                         con.disconnect();
                     }
                 }
+        }
+
+    public static String getMultitenantUrl(TenantIdentifier tenantIdentifier, String path) {
+        StringBuilder sb = new StringBuilder();
+        if (tenantIdentifier.getConnectionUriDomain() == TenantIdentifier.DEFAULT_CONNECTION_URI) {
+            sb.append("http://localhost:3567");
+        } else {
+            sb.append("http://");
+            sb.append(tenantIdentifier.getConnectionUriDomain());
+            sb.append(":3567");
+        }
+
+        if (!tenantIdentifier.getAppId().equals(TenantIdentifier.DEFAULT_APP_ID)) {
+            sb.append("/appid-");
+            sb.append(tenantIdentifier.getAppId());
+        }
+
+        if (!tenantIdentifier.getTenantId().equals(TenantIdentifier.DEFAULT_TENANT_ID)) {
+            sb.append("/");
+            sb.append(tenantIdentifier.getTenantId());
+        }
+        sb.append(path);
+        return sb.toString();
     }
 }

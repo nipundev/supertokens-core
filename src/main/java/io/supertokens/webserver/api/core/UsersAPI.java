@@ -16,10 +16,7 @@
 
 package io.supertokens.webserver.api.core;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import io.supertokens.Main;
 import io.supertokens.authRecipe.AuthRecipe;
 import io.supertokens.authRecipe.UserPaginationContainer;
@@ -28,7 +25,10 @@ import io.supertokens.output.Logging;
 import io.supertokens.pluginInterface.RECIPE_ID;
 import io.supertokens.pluginInterface.dashboard.DashboardSearchTags;
 import io.supertokens.pluginInterface.exceptions.StorageQueryException;
+import io.supertokens.pluginInterface.multitenancy.TenantIdentifierWithStorage;
+import io.supertokens.pluginInterface.multitenancy.exceptions.TenantOrAppNotFoundException;
 import io.supertokens.useridmapping.UserIdMapping;
+import io.supertokens.utils.SemVer;
 import io.supertokens.utils.Utils;
 import io.supertokens.webserver.InputParser;
 import io.supertokens.webserver.WebserverAPI;
@@ -56,6 +56,7 @@ public class UsersAPI extends WebserverAPI {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        // this API is tenant specific
         String[] recipeIds = InputParser.getCommaSeparatedStringArrayQueryParamOrThrowError(req, "includeRecipeIds",
                 true);
 
@@ -69,6 +70,13 @@ public class UsersAPI extends WebserverAPI {
                 }
                 recipeIdsEnumBuilder.add(recipeID);
             }
+        }
+
+        TenantIdentifierWithStorage tenantIdentifierWithStorage = null;
+        try {
+            tenantIdentifierWithStorage = this.getTenantIdentifierWithStorageFromRequest(req);
+        } catch (TenantOrAppNotFoundException e) {
+            throw new ServletException(e);
         }
 
         /*
@@ -153,15 +161,16 @@ public class UsersAPI extends WebserverAPI {
         }
 
         try {
-            UserPaginationContainer users = AuthRecipe.getUsers(super.main, limit, timeJoinedOrder, paginationToken,
+            UserPaginationContainer users = AuthRecipe.getUsers(tenantIdentifierWithStorage,
+                    limit, timeJoinedOrder, paginationToken,
                     recipeIdsEnumBuilder.build().toArray(RECIPE_ID[]::new), searchTags);
 
             ArrayList<String> userIds = new ArrayList<>();
             for (int i = 0; i < users.users.length; i++) {
                 userIds.add(users.users[i].user.id);
             }
-            HashMap<String, String> userIdMapping = UserIdMapping.getUserIdMappingForSuperTokensUserIds(super.main,
-                    userIds);
+            HashMap<String, String> userIdMapping = UserIdMapping.getUserIdMappingForSuperTokensUserIds(
+                    tenantIdentifierWithStorage, userIds);
             if (!userIdMapping.isEmpty()) {
                 for (int i = 0; i < users.users.length; i++) {
                     String externalId = userIdMapping.get(userIds.get(i));
@@ -175,6 +184,13 @@ public class UsersAPI extends WebserverAPI {
             result.addProperty("status", "OK");
 
             JsonArray usersJson = new JsonParser().parse(new Gson().toJson(users.users)).getAsJsonArray();
+
+            if (getVersionFromRequest(req).lesserThan(SemVer.v3_0)) {
+                for (JsonElement user : usersJson) {
+                    user.getAsJsonObject().get("user").getAsJsonObject().remove("tenantIds");
+                }
+            }
+
             result.add("users", usersJson);
 
             if (users.nextPaginationToken != null) {
@@ -182,9 +198,9 @@ public class UsersAPI extends WebserverAPI {
             }
             super.sendJsonResponse(200, result, resp);
         } catch (UserPaginationToken.InvalidTokenException e) {
-            Logging.debug(main, Utils.exceptionStacktraceToString(e));
+            Logging.debug(main, tenantIdentifierWithStorage, Utils.exceptionStacktraceToString(e));
             throw new ServletException(new BadRequestException("invalid pagination token"));
-        } catch (StorageQueryException e) {
+        } catch (StorageQueryException | TenantOrAppNotFoundException e) {
             throw new ServletException(e);
         }
     }

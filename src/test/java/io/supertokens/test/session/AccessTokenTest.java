@@ -16,12 +16,16 @@
 
 package io.supertokens.test.session;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.supertokens.ProcessState.EventAndException;
 import io.supertokens.ProcessState.PROCESS_STATE;
 import io.supertokens.exceptions.TryRefreshTokenException;
+import io.supertokens.jwt.JWTSigningFunctions;
+import io.supertokens.jwt.exceptions.UnsupportedJWTSigningAlgorithmException;
 import io.supertokens.pluginInterface.exceptions.StorageQueryException;
 import io.supertokens.pluginInterface.exceptions.StorageTransactionLogicException;
+import io.supertokens.pluginInterface.multitenancy.exceptions.TenantOrAppNotFoundException;
 import io.supertokens.session.Session;
 import io.supertokens.session.accessToken.AccessToken;
 import io.supertokens.session.accessToken.AccessToken.AccessTokenInfo;
@@ -45,6 +49,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +77,7 @@ public class AccessTokenTest {
     // * - create session with some data -> expire -> get access token without verifying, check payload is fine.
     @Test
     public void testCreateSessionWithDataExpireGetAccessTokenAndCheckPayload() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
 
         Utils.setValueInConfig("access_token_validity", "1"); // 1 second validity
 
@@ -105,10 +110,11 @@ public class AccessTokenTest {
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STOPPED));
 
     }
+
     // * - create session with some data -> expire -> get access token without verifying, check payload is fine.
     @Test
     public void testCreateSessionV2WithDataExpireGetAccessTokenAndCheckPayload() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
 
         Utils.setValueInConfig("access_token_validity", "1"); // 1 second validity
 
@@ -123,7 +129,7 @@ public class AccessTokenTest {
         userDataInDatabase.addProperty("key", "value");
 
         SessionInformationHolder sessionInfo = Session.createNewSession(process.getProcess(), userId, userDataInJWT,
-                userDataInDatabase, false, true, false);
+                userDataInDatabase, false, AccessToken.getLatestVersion(), false);
 
         // expire
         Thread.sleep(2000);
@@ -146,7 +152,7 @@ public class AccessTokenTest {
     // what you gave
     @Test
     public void testSessionWithOldExpiryTimeForAccessToken() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
 
         TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
@@ -159,7 +165,7 @@ public class AccessTokenTest {
         userDataInDatabase.addProperty("key", "value");
 
         SessionInformationHolder sessionInfo = Session.createNewSession(process.getProcess(), userId, userDataInJWT,
-                userDataInDatabase, false, true, false);
+                userDataInDatabase, false, AccessToken.getLatestVersion(), false);
 
         assert sessionInfo.accessToken != null;
         AccessTokenInfo accessTokenInfo = AccessToken.getInfoFromAccessToken(process.getProcess(),
@@ -170,7 +176,7 @@ public class AccessTokenTest {
         TokenInfo newAccessTokenInfo = AccessToken.createNewAccessToken(process.getProcess(),
                 sessionInfo.session.handle, userId, accessTokenInfo.refreshTokenHash1,
                 accessTokenInfo.parentRefreshTokenHash1, userDataInDatabase, accessTokenInfo.antiCsrfToken,
-                value, AccessToken.VERSION.V3, false);
+                value, AccessToken.getLatestVersion(), false);
 
         AccessTokenInfo customAccessToken = AccessToken
                 .getInfoFromAccessTokenWithoutVerifying(newAccessTokenInfo.token);
@@ -181,7 +187,7 @@ public class AccessTokenTest {
     // what you gave
     @Test
     public void testSessionWithOldExpiryTimeForAccessTokenV2() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
 
         TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
@@ -194,7 +200,7 @@ public class AccessTokenTest {
         userDataInDatabase.addProperty("key", "value");
 
         SessionInformationHolder sessionInfo = Session.createNewSession(process.getProcess(), userId, userDataInJWT,
-                userDataInDatabase, false, false, false);
+                userDataInDatabase, false, AccessToken.VERSION.V2, false);
 
         assert sessionInfo.accessToken != null;
         AccessTokenInfo accessTokenInfo = AccessToken.getInfoFromAccessToken(process.getProcess(),
@@ -215,7 +221,7 @@ public class AccessTokenTest {
     // * - create access token version 2 -> get version -> should be 2
     @Test
     public void testCreateAccessTokenVersion2AndCheck() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
 
         TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
@@ -228,7 +234,7 @@ public class AccessTokenTest {
         userDataInDatabase.addProperty("key", "value");
 
         SessionInformationHolder sessionInfo = Session.createNewSession(process.getProcess(), userId, userDataInJWT,
-                userDataInDatabase, false, false, false);
+                userDataInDatabase, false, AccessToken.VERSION.V2, false);
 
         assert sessionInfo.accessToken != null;
         AccessToken.AccessTokenInfo accessTokenInfo = AccessToken.getInfoFromAccessToken(process.getProcess(),
@@ -244,7 +250,7 @@ public class AccessTokenTest {
     // good case test
     @Test
     public void inputOutputTest() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -254,7 +260,8 @@ public class AccessTokenTest {
         // db key
         long expiryTime = System.currentTimeMillis() + 1000;
         TokenInfo newToken = AccessToken.createNewAccessToken(process.getProcess(), "sessionHandle", "userId",
-                "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken", expiryTime, AccessToken.VERSION.V3, false);
+                "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken", expiryTime,
+                AccessToken.getLatestVersion(), false);
         AccessTokenInfo info = AccessToken.getInfoFromAccessToken(process.getProcess(), newToken.token, true);
         assertEquals("sessionHandle", info.sessionHandle);
         assertEquals("userId", info.userId);
@@ -262,17 +269,18 @@ public class AccessTokenTest {
         assertEquals("parentRefreshTokenHash1", info.parentRefreshTokenHash1);
         assertEquals("value", info.userData.get("key").getAsString());
         assertEquals("antiCsrfToken", info.antiCsrfToken);
-        assertEquals(expiryTime/1000*1000, info.expiryTime);
+        assertEquals(expiryTime / 1000 * 1000, info.expiryTime);
 
         JWT.JWTPreParseInfo jwtInfo = JWT.preParseJWTInfo(newToken.token);
         assertNotNull(jwtInfo.kid);
-        assertEquals(jwtInfo.version, AccessToken.VERSION.V3);
+        assertEquals(jwtInfo.version, AccessToken.getLatestVersion());
 
         process.kill();
     }
+
     @Test
     public void inputOutputTestStatic() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -282,7 +290,8 @@ public class AccessTokenTest {
         // db key
         long expiryTime = System.currentTimeMillis() + 1000;
         TokenInfo newToken = AccessToken.createNewAccessToken(process.getProcess(), "sessionHandle", "userId",
-                "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken", expiryTime, AccessToken.VERSION.V3, true);
+                "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken", expiryTime,
+                AccessToken.getLatestVersion(), true);
         AccessTokenInfo info = AccessToken.getInfoFromAccessToken(process.getProcess(), newToken.token, true);
         assertEquals("sessionHandle", info.sessionHandle);
         assertEquals("userId", info.userId);
@@ -290,17 +299,17 @@ public class AccessTokenTest {
         assertEquals("parentRefreshTokenHash1", info.parentRefreshTokenHash1);
         assertEquals("value", info.userData.get("key").getAsString());
         assertEquals("antiCsrfToken", info.antiCsrfToken);
-        assertEquals(expiryTime/1000*1000, info.expiryTime);
+        assertEquals(expiryTime / 1000 * 1000, info.expiryTime);
 
         JWT.JWTPreParseInfo jwtInfo = JWT.preParseJWTInfo(newToken.token);
         assertNotNull(jwtInfo.kid);
-        assertEquals(jwtInfo.version, AccessToken.VERSION.V3);
+        assertEquals(jwtInfo.version, AccessToken.getLatestVersion());
         process.kill();
     }
 
     @Test
     public void inputOutputTestV2() throws Exception {
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -310,7 +319,8 @@ public class AccessTokenTest {
         // db key
         long expiryTime = System.currentTimeMillis() + 1000;
         TokenInfo newToken = AccessToken.createNewAccessToken(process.getProcess(), "sessionHandle", "userId",
-                "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken", expiryTime, AccessToken.VERSION.V2, false);
+                "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken", expiryTime,
+                AccessToken.VERSION.V2, false);
         AccessTokenInfo info = AccessToken.getInfoFromAccessToken(process.getProcess(), newToken.token, true);
         assertEquals("sessionHandle", info.sessionHandle);
         assertEquals("userId", info.userId);
@@ -325,8 +335,9 @@ public class AccessTokenTest {
     @Test
     public void inputOutputTestv1() throws InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
             StorageQueryException, StorageTransactionLogicException, TryRefreshTokenException,
-            UnsupportedEncodingException, InvalidKeySpecException, SignatureException {
-        String[] args = { "../" };
+            UnsupportedEncodingException, InvalidKeySpecException, SignatureException,
+            UnsupportedJWTSigningAlgorithmException {
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -349,10 +360,11 @@ public class AccessTokenTest {
     // short interval for signing key
     @Test
     public void signingKeyShortInterval()
-            throws InterruptedException, StorageQueryException, StorageTransactionLogicException, IOException {
+            throws InterruptedException, StorageQueryException, TenantOrAppNotFoundException,
+            StorageTransactionLogicException, IOException, UnsupportedJWTSigningAlgorithmException {
         Utils.setValueInConfig("access_token_dynamic_signing_key_update_interval", "0.00027"); // 1 second
 
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -368,7 +380,7 @@ public class AccessTokenTest {
     public void signingKeyChangeDoesNotThrow() throws Exception {
         Utils.setValueInConfig("access_token_dynamic_signing_key_update_interval", "0.00027"); // 1 second
 
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -377,7 +389,7 @@ public class AccessTokenTest {
 
         TokenInfo tokenInfo = AccessToken.createNewAccessToken(process.getProcess(), "sessionHandle", "userId",
                 "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken",
-                null, AccessToken.VERSION.V3, false);
+                null, AccessToken.getLatestVersion(), false);
         Thread.sleep(1500);
 
         try {
@@ -394,7 +406,7 @@ public class AccessTokenTest {
             throws Exception {
         Utils.setValueInConfig("access_token_validity", "1"); // 1 second
 
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -404,7 +416,7 @@ public class AccessTokenTest {
 
         TokenInfo tokenInfo = AccessToken.createNewAccessToken(process.getProcess(), "sessionHandle", "userId",
                 "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken",
-                null, AccessToken.VERSION.V3, false);
+                null, AccessToken.getLatestVersion(), false);
         Thread.sleep(1500);
 
         try {
@@ -420,8 +432,9 @@ public class AccessTokenTest {
 
     @Test
     public void verifyRandomAccessTokenFailure()
-            throws InterruptedException, StorageQueryException, StorageTransactionLogicException {
-        String[] args = { "../" };
+            throws InterruptedException, StorageQueryException, StorageTransactionLogicException,
+            UnsupportedJWTSigningAlgorithmException {
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -439,7 +452,7 @@ public class AccessTokenTest {
         Utils.setValueInConfig("access_token_dynamic_signing_key_update_interval", "0.00027"); // 1 second
         Utils.setValueInConfig("access_token_validity", "1"); // 1 second
 
-        String[] args = { "../" };
+        String[] args = {"../"};
         TestingProcess process = TestingProcessManager.start(args);
         EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
         assertNotNull(e);
@@ -448,7 +461,7 @@ public class AccessTokenTest {
 
         TokenInfo tokenInfo = AccessToken.createNewAccessToken(process.getProcess(), "sessionHandle", "userId",
                 "refreshTokenHash1", "parentRefreshTokenHash1", jsonObj, "antiCsrfToken",
-                null, AccessToken.VERSION.V3, false);
+                null, AccessToken.getLatestVersion(), false);
 
         Thread.sleep(3500);
 
@@ -475,5 +488,41 @@ public class AccessTokenTest {
         assert (!hasNullPointerException.get());
 
         process.kill();
+    }
+
+    @Test
+    public void testThatWeUseLatestVersionIfHeaderHasNoVersion() throws Exception {
+        String[] args = {"../"};
+        TestingProcess process = TestingProcessManager.start(args);
+        EventAndException e = process.checkOrWaitForEvent(PROCESS_STATE.STARTED);
+        assertNotNull(e);
+
+        String userId = "userId";
+        JsonObject userDataInJWT = new JsonObject();
+        JsonObject userDataInDatabase = new JsonObject();
+        SessionInformationHolder sessionInfo = Session.createNewSession(process.getProcess(), userId, userDataInJWT,
+                userDataInDatabase);
+
+        String accessToken = sessionInfo.accessToken.token;
+        String payloadString = accessToken.split("\\.")[1];
+        String decodedPayload = new String(Base64.getUrlDecoder().decode(payloadString));
+        JsonObject accessTokenPayload = new Gson().fromJson(decodedPayload, JsonObject.class);
+        accessTokenPayload.remove("iat");
+        accessTokenPayload.remove("exp");
+
+        String algorithm = "RS256";
+        String jwksDomain = "http://localhost";
+        long validity = 3600;
+
+        String jwt = JWTSigningFunctions.createJWTToken(process.main, algorithm, accessTokenPayload, jwksDomain, validity, false);
+
+        String header = jwt.split("\\.")[0];
+        String decodedHeader = new String(Base64.getUrlDecoder().decode(header));
+        JsonObject headerObject = new Gson().fromJson(decodedHeader, JsonObject.class);
+        // Verify that by default the version is not present
+        assertNull(headerObject.get("version"));
+
+        JWT.JWTPreParseInfo info =  JWT.preParseJWTInfo(jwt);
+        assert info.version == AccessToken.getLatestVersion();
     }
 }

@@ -16,18 +16,14 @@
 
 package io.supertokens.test.authRecipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import io.supertokens.ProcessState.PROCESS_STATE;
-import io.supertokens.emailpassword.EmailPassword;
-import io.supertokens.passwordless.Passwordless;
-import io.supertokens.passwordless.Passwordless.CreateCodeResponse;
-import io.supertokens.pluginInterface.STORAGE_TYPE;
-import io.supertokens.storageLayer.StorageLayer;
-import io.supertokens.test.TestingProcessManager;
-import io.supertokens.test.Utils;
-import io.supertokens.test.httpRequest.HttpRequestForTesting;
-import io.supertokens.thirdparty.ThirdParty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import io.supertokens.utils.SemVer;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,10 +31,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import static org.junit.Assert.*;
+import io.supertokens.ProcessState.PROCESS_STATE;
+import io.supertokens.dashboard.Dashboard;
+import io.supertokens.emailpassword.EmailPassword;
+import io.supertokens.passwordless.Passwordless;
+import io.supertokens.passwordless.Passwordless.CreateCodeResponse;
+import io.supertokens.pluginInterface.STORAGE_TYPE;
+import io.supertokens.pluginInterface.dashboard.DashboardSearchTags;
+import io.supertokens.storageLayer.StorageLayer;
+import io.supertokens.test.TestingProcessManager;
+import io.supertokens.test.Utils;
+import io.supertokens.test.httpRequest.HttpRequestForTesting;
+import io.supertokens.thirdparty.ThirdParty;
 
 public class GetUsersWithSearchTagsAPITest {
     @Rule
@@ -56,7 +64,7 @@ public class GetUsersWithSearchTagsAPITest {
 
     @Test
     public void testSearchingWhenFieldsHaveEmptyInputsWillBehaveLikeRegularPaginationAPI() throws Exception {
-        String[] args = {"../"};
+        String[] args = { "../" };
         TestingProcessManager.TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -132,7 +140,7 @@ public class GetUsersWithSearchTagsAPITest {
 
     @Test
     public void testSearchingForUsers() throws Exception {
-        String[] args = {"../"};
+        String[] args = { "../" };
         TestingProcessManager.TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -176,7 +184,7 @@ public class GetUsersWithSearchTagsAPITest {
 
     @Test
     public void testSearchingForUsersWithMultipleInputsForEachField() throws Exception {
-        String[] args = {"../"};
+        String[] args = { "../" };
         TestingProcessManager.TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -187,9 +195,10 @@ public class GetUsersWithSearchTagsAPITest {
         // create emailpassword user
         ArrayList<String> userIds = new ArrayList<>();
         userIds.add(EmailPassword.signUp(process.getProcess(), "test@example.com", "testPass123").id);
-        Thread.sleep(10);
+        Thread.sleep(50);
         userIds.add(EmailPassword.signUp(process.getProcess(), "abc@example.com", "testPass123").id);
-        Thread.sleep(10);
+        Thread.sleep(50);
+
         // search with multiple inputs to email
         {
             HashMap<String, String> params = new HashMap<>();
@@ -209,8 +218,9 @@ public class GetUsersWithSearchTagsAPITest {
 
         // create thirdparty user
         userIds.add(ThirdParty.signInUp(process.getProcess(), "testpid", "test", "test@example.com").user.id);
-        Thread.sleep(10);
+        Thread.sleep(50);
         userIds.add(ThirdParty.signInUp(process.getProcess(), "newtestpid", "test123", "test@example.com").user.id);
+        Thread.sleep(50);
         // search with multiple inputs to provider
         {
             HashMap<String, String> params = new HashMap<>();
@@ -237,6 +247,7 @@ public class GetUsersWithSearchTagsAPITest {
                     createCodeResponse.deviceIdHash,
                     createCodeResponse.userInputCode, null).user.id);
         }
+        Thread.sleep(50);
         {
             CreateCodeResponse createCodeResponse = Passwordless.createCode(process.getProcess(), "test2@example.com",
                     "+911987654321",
@@ -245,6 +256,7 @@ public class GetUsersWithSearchTagsAPITest {
                     createCodeResponse.deviceIdHash,
                     createCodeResponse.userInputCode, null).user.id);
         }
+        Thread.sleep(50);
 
         // search with multiple inputs to phone
         {
@@ -267,7 +279,7 @@ public class GetUsersWithSearchTagsAPITest {
 
     @Test
     public void testRetrievingUsersWithConflictingTagsReturnsEmptyList() throws Exception {
-        String[] args = {"../"};
+        String[] args = { "../" };
         TestingProcessManager.TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -308,7 +320,7 @@ public class GetUsersWithSearchTagsAPITest {
 
     @Test
     public void testNormalizingSearchInputsWorksCorrectly() throws Exception {
-        String[] args = {"../"};
+        String[] args = { "../" };
         TestingProcessManager.TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -354,7 +366,7 @@ public class GetUsersWithSearchTagsAPITest {
 
     @Test
     public void testMultipleParams() throws Exception {
-        String[] args = {"../"};
+        String[] args = { "../" };
         TestingProcessManager.TestingProcess process = TestingProcessManager.start(args);
         assertNotNull(process.checkOrWaitForEvent(PROCESS_STATE.STARTED));
 
@@ -382,7 +394,7 @@ public class GetUsersWithSearchTagsAPITest {
         JsonObject response = HttpRequestForTesting.sendGETRequest(process.getProcess(), "",
                 "http://localhost:3567/users", params, 1000, 1000, null, SemVer.v2_18.get(),
                 null);
-
+        
         assertEquals("OK", response.get("status").getAsString());
         assertEquals(0, response.get("users").getAsJsonArray().size());
 
