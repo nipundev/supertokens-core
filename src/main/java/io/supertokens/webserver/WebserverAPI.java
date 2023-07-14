@@ -194,7 +194,7 @@ public abstract class WebserverAPI extends HttpServlet {
         }
     }
 
-    protected boolean shouldProtectDbConfig(HttpServletRequest req) throws TenantOrAppNotFoundException {
+    protected boolean shouldProtectProtectedConfig(HttpServletRequest req) throws TenantOrAppNotFoundException {
         String apiKey = req.getHeader("api-key");
         String superTokensSaaSSecret = Config.getConfig(
                 new TenantIdentifier(null, null, null), this.main)
@@ -390,6 +390,8 @@ public abstract class WebserverAPI extends HttpServlet {
 
         TenantIdentifier tenantIdentifier = null;
         try {
+            tenantIdentifier = getTenantIdentifierWithStorageFromRequest(req);
+
             if (!this.checkIPAccess(req, resp)) {
                 // IP access denied and the filter has already sent the response
                 return;
@@ -399,7 +401,6 @@ public abstract class WebserverAPI extends HttpServlet {
                 assertThatAPIKeyCheckPasses(req);
             }
 
-            tenantIdentifier = getTenantIdentifierWithStorageFromRequest(req);
             SemVer version = getVersionFromRequest(req);
 
             // Check for CDI version for multitenancy
@@ -446,7 +447,7 @@ public abstract class WebserverAPI extends HttpServlet {
                             "AppId or tenantId not found => " + ((TenantOrAppNotFoundException) rootCause).getMessage(),
                             resp);
                 } else if (rootCause instanceof BadPermissionException) {
-                    sendTextResponse(403, e.getMessage(), resp);
+                    sendTextResponse(403, rootCause.getMessage(), resp);
                 } else {
                     sendTextResponse(500, "Internal Error", resp);
                 }
@@ -497,5 +498,4 @@ public abstract class WebserverAPI extends HttpServlet {
             super();
         }
     }
-
 }
