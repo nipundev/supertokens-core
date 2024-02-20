@@ -26,6 +26,7 @@ import io.supertokens.cli.exception.QuitProgramException;
 import io.supertokens.cli.logging.Logging;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,7 +152,7 @@ public class InstallHandler extends CommandHandler {
             }
         }
         f.setExecutable(true, false);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
+        try (BufferedWriter writer = Files.newBufferedWriter(f.toPath())) {
             writer.write(content);
         }
     }
