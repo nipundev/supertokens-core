@@ -69,11 +69,11 @@ public class UpdateExternalUserIdInfoAPI extends WebserverAPI {
             // normalize userIdTypeString
             userIdTypeString = userIdTypeString.trim();
 
-            if (userIdTypeString.equals("SUPERTOKENS")) {
+            if ("SUPERTOKENS".equals(userIdTypeString)) {
                 userIdType = UserIdType.SUPERTOKENS;
-            } else if (userIdTypeString.equals("EXTERNAL")) {
+            } else if ("EXTERNAL".equals(userIdTypeString)) {
                 userIdType = UserIdType.EXTERNAL;
-            } else if (!userIdTypeString.equals("ANY")) {
+            } else if (!"ANY".equals(userIdTypeString)) {
                 throw new ServletException(new WebserverAPI.BadRequestException(
                         "Field name 'userIdType' should be one of 'SUPERTOKENS', 'EXTERNAL' or 'ANY'"));
             }

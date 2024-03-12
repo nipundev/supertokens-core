@@ -292,7 +292,7 @@ public class JWTSigningKey extends ResourceDistributor.SingletonResource {
 
     private JWTSigningKeyInfo generateKeyForAlgorithm(SupportedAlgorithms algorithm)
             throws NoSuchAlgorithmException, UnsupportedJWTSigningAlgorithmException {
-        if (algorithm.getAlgorithmType().equalsIgnoreCase("rsa")) {
+        if ("rsa".equalsIgnoreCase(algorithm.getAlgorithmType())) {
             long currentTimeInMillis = System.currentTimeMillis();
             Utils.PubPriKey newKey = Utils.generateNewPubPriKey();
             return new JWTAsymmetricSigningKeyInfo("s-" + Utils.getUUID(), currentTimeInMillis, algorithm.name(),

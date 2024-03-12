@@ -347,7 +347,7 @@ public class StorageLayer extends ResourceDistributor.SingletonResource {
                         .getAllResourcesWithResourceKey(RESOURCE_KEY);
         for (ResourceDistributor.KeyClass key : resources.keySet()) {
             Storage storage = ((StorageLayer) resources.get(key)).storage;
-            if (usedIds.equals("")) {
+            if ("".equals(usedIds)) {
                 usedIds = storage.getUserPoolId();
             }
             if (usedIds.equals(storage.getUserPoolId())) {

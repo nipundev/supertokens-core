@@ -68,7 +68,7 @@ public class UsersCountAPI extends WebserverAPI {
         }
 
         boolean includeAllTenants = true;
-        if (includeAllTenantsStr == null || !includeAllTenantsStr.equalsIgnoreCase("true")) {
+        if (includeAllTenantsStr == null || !"true".equalsIgnoreCase(includeAllTenantsStr)) {
             includeAllTenants = false;
         }
 

@@ -44,8 +44,8 @@ public class ParsedFirebaseSCryptResponse {
 
             // check that stored password hash contains 7 fields and after splitting, the first field is empty and the
             // second field has the firebase scrypt prefix
-            if (!(separatedPasswordHash.length == 7 && separatedPasswordHash[0].equals("")
-                    && separatedPasswordHash[1].equals(FIREBASE_SCRYPT_PREFIX))) {
+            if (!(separatedPasswordHash.length == 7 && "".equals(separatedPasswordHash[0])
+                    && FIREBASE_SCRYPT_PREFIX.equals(separatedPasswordHash[1]))) {
                 return null;
             }
 

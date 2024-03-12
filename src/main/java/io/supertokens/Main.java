@@ -435,7 +435,7 @@ public class Main {
         Thread[] subThreads = new Thread[Thread.activeCount()];
         Thread.enumerate(subThreads);
         for (Thread t : subThreads) {
-            if (t != null && !t.getName().equals(this.mainThread.getName()) && !t.getName().equals("main")) {
+            if (t != null && !t.getName().equals(this.mainThread.getName()) && !"main".equals(t.getName())) {
                 System.out.println(t.getName());
             }
         }

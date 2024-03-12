@@ -101,7 +101,7 @@ public class UsersAPI extends WebserverAPI {
         String timeJoinedOrder = InputParser.getQueryParamOrThrowError(req, "timeJoinedOrder", true);
 
         if (timeJoinedOrder != null) {
-            if (!timeJoinedOrder.equals("ASC") && !timeJoinedOrder.equals("DESC")) {
+            if (!"ASC".equals(timeJoinedOrder) && !"DESC".equals(timeJoinedOrder)) {
                 throw new ServletException(new BadRequestException("timeJoinedOrder can be either ASC OR DESC"));
             }
         } else {

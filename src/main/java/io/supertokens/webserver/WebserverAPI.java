@@ -233,8 +233,8 @@ public abstract class WebserverAPI extends HttpServlet {
         if (!apiPath.startsWith("/")) {
             apiPath = "/" + apiPath;
         }
-        if (apiPath.equals("/")) {
-            if (path.equals("") || path.equals("/")) {
+        if ("/".equals(apiPath)) {
+            if ("".equals(path) || "/".equals(path)) {
                 return null;
             }
         } else {
@@ -265,14 +265,14 @@ public abstract class WebserverAPI extends HttpServlet {
         if (!apiPath.startsWith("/")) {
             apiPath = "/" + apiPath;
         }
-        if (apiPath.equals("/")) {
-            if (path.equals("") || path.equals("/")) {
+        if ("/".equals(apiPath)) {
+            if ("".equals(path) || "/".equals(path)) {
                 return null;
             }
         } else {
             if (path.matches("^/appid-[a-z0-9-]*(/[a-z0-9-]+)?" + apiPath + "/?$")) {
                 String appId = path.split("/")[1].toLowerCase();
-                if (appId.equals("appid-public")) {
+                if ("appid-public".equals(appId)) {
                     return null;
                 }
                 return appId.substring(6);

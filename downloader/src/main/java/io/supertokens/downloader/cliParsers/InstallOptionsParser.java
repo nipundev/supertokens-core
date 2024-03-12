@@ -25,7 +25,7 @@ public class InstallOptionsParser {
 
     public InstallOptionsParser(String[] options) {
         for (String option : options) {
-            if (option.equals(SOURCE_OPTION)) {
+            if (SOURCE_OPTION.equals(option)) {
                 this.withSource = true;
                 return;
             }

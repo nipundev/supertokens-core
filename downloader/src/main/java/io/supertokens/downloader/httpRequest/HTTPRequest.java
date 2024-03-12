@@ -102,7 +102,7 @@ public class HTTPRequest {
             String resultJarLinks = makeGETRequest(url, 0);
             resultJarLinks = resultJarLinks.split("\\[")[1].split("]")[0];
             String[] result = {};
-            if (resultJarLinks.equals("")) {
+            if ("".equals(resultJarLinks)) {
                 return result;
             }
             result = Arrays.stream(resultJarLinks.split(",")).map(x -> x.substring(1, x.length() - 1))

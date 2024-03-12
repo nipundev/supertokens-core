@@ -501,11 +501,11 @@ public class CoreConfig {
             }
         }
 
-        if (!password_hashing_alg.equalsIgnoreCase("ARGON2") && !password_hashing_alg.equalsIgnoreCase("BCRYPT")) {
+        if (!"ARGON2".equalsIgnoreCase(password_hashing_alg) && !"BCRYPT".equalsIgnoreCase(password_hashing_alg)) {
             throw new InvalidConfigException("'password_hashing_alg' must be one of 'ARGON2' or 'BCRYPT'");
         }
 
-        if (password_hashing_alg.equalsIgnoreCase("ARGON2")) {
+        if ("ARGON2".equalsIgnoreCase(password_hashing_alg)) {
             if (argon2_iterations <= 0) {
                 throw new InvalidConfigException("'argon2_iterations' must be >= 1");
             }
@@ -526,21 +526,21 @@ public class CoreConfig {
                 throw new InvalidConfigException(
                         "'argon2_hashing_pool_size' must be <= 'max_server_pool_size'");
             }
-        } else if (password_hashing_alg.equalsIgnoreCase("BCRYPT")) {
+        } else if ("BCRYPT".equalsIgnoreCase(password_hashing_alg)) {
             if (bcrypt_log_rounds <= 0) {
                 throw new InvalidConfigException("'bcrypt_log_rounds' must be >= 1");
             }
         }
 
-        if (base_path != null && !base_path.equals("") && !base_path.equals("/")) {
+        if (base_path != null && !"".equals(base_path) && !"/".equals(base_path)) {
             if (base_path.contains(" ")) {
                 throw new InvalidConfigException("Invalid characters in base_path config");
             }
         }
 
-        if (!log_level.equalsIgnoreCase("info") && !log_level.equalsIgnoreCase("none")
-                && !log_level.equalsIgnoreCase("error") && !log_level.equalsIgnoreCase("warn")
-                && !log_level.equalsIgnoreCase("debug")) {
+        if (!"info".equalsIgnoreCase(log_level) && !"none".equalsIgnoreCase(log_level)
+                && !"error".equalsIgnoreCase(log_level) && !"warn".equalsIgnoreCase(log_level)
+                && !"debug".equalsIgnoreCase(log_level)) {
             throw new InvalidConfigException(
                     "'log_level' config must be one of \"NONE\",\"DEBUG\", \"INFO\", \"WARN\" or \"ERROR\".");
         }
@@ -579,13 +579,13 @@ public class CoreConfig {
         // Normalize
         if (ip_allow_regex != null) {
             ip_allow_regex = ip_allow_regex.trim();
-            if (ip_allow_regex.equals("")) {
+            if ("".equals(ip_allow_regex)) {
                 ip_allow_regex = null;
             }
         }
         if (ip_deny_regex != null) {
             ip_deny_regex = ip_deny_regex.trim();
-            if (ip_deny_regex.equals("")) {
+            if ("".equals(ip_deny_regex)) {
                 ip_deny_regex = null;
             }
         }
@@ -595,7 +595,7 @@ public class CoreConfig {
         }
 
         { // info_log_path
-            if (info_log_path == null || info_log_path.equalsIgnoreCase("null")) {
+            if (info_log_path == null || "null".equalsIgnoreCase(info_log_path)) {
                 info_log_path = "null";
             } else {
                 if (info_log_path.equals(logDefault)) {
@@ -606,7 +606,7 @@ public class CoreConfig {
         }
 
         { // error_log_path
-            if (error_log_path == null || error_log_path.equalsIgnoreCase("null")) {
+            if (error_log_path == null || "null".equalsIgnoreCase(error_log_path)) {
                 error_log_path = "null";
             } else {
                 if (error_log_path.equals(logDefault)) {
@@ -618,7 +618,7 @@ public class CoreConfig {
 
         { // base_path
             String n_base_path = this.base_path; // Don't modify the original value from the config
-            if (n_base_path == null || n_base_path.equals("/") || n_base_path.isEmpty()) {
+            if (n_base_path == null || "/".equals(n_base_path) || n_base_path.isEmpty()) {
                 base_path = "";
             } else {
                 while (n_base_path.contains("//")) { // Catch corner case where there are multiple '/' together
@@ -671,7 +671,7 @@ public class CoreConfig {
     }
 
     public void createLoggingFile(Main main) throws IOException {
-        if (!getInfoLogPath(main).equals("null")) {
+        if (!"null".equals(getInfoLogPath(main))) {
             File infoLog = new File(getInfoLogPath(main));
             if (!infoLog.exists()) {
                 File parent = infoLog.getParentFile();
@@ -682,7 +682,7 @@ public class CoreConfig {
             }
         }
 
-        if (!getErrorLogPath(main).equals("null")) {
+        if (!"null".equals(getErrorLogPath(main))) {
             File errorLog = new File(getErrorLogPath(main));
             if (!errorLog.exists()) {
                 File parent = errorLog.getParentFile();

@@ -71,7 +71,7 @@ public class ImportUserWithPasswordHashAPI extends WebserverAPI {
         // normalise password hash
         passwordHash = passwordHash.trim();
 
-        if (passwordHash.equals("")) {
+        if ("".equals(passwordHash)) {
             throw new ServletException(new WebserverAPI.BadRequestException("Password hash cannot be an empty string"));
         }
 
@@ -81,7 +81,7 @@ public class ImportUserWithPasswordHashAPI extends WebserverAPI {
             // normalise hashing algorithm string
             hashingAlgorithmString = hashingAlgorithmString.trim().toUpperCase();
 
-            if (hashingAlgorithmString.equals("")) {
+            if ("".equals(hashingAlgorithmString)) {
                 throw new ServletException(
                         new WebserverAPI.BadRequestException("Hashing Algorithm cannot be an empty string"));
             }

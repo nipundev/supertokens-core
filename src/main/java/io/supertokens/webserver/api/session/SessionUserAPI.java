@@ -55,14 +55,14 @@ public class SessionUserAPI extends WebserverAPI {
 
         boolean fetchAcrossAllTenants = true;
         if (fetchAcrossAllTenantsString != null) {
-            fetchAcrossAllTenants = fetchAcrossAllTenantsString.toLowerCase().equals("true");
+            fetchAcrossAllTenants = "true".equals(fetchAcrossAllTenantsString.toLowerCase());
         }
 
         String fetchSessionsForAllLinkedAccountsString = InputParser.getQueryParamOrThrowError(req,
                 "fetchSessionsForAllLinkedAccounts", true);
         boolean fetchSessionsForAllLinkedAccounts = true;
         if (fetchSessionsForAllLinkedAccountsString != null) {
-            fetchSessionsForAllLinkedAccounts = fetchSessionsForAllLinkedAccountsString.toLowerCase().equals("true");
+            fetchSessionsForAllLinkedAccounts = "true".equals(fetchSessionsForAllLinkedAccountsString.toLowerCase());
         }
 
         try {

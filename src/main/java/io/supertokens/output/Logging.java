@@ -50,11 +50,11 @@ public class Logging extends ResourceDistributor.SingletonResource {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     private Logging(Main main) {
-        this.infoLogger = Config.getBaseConfig(main).getInfoLogPath(main).equals("null")
+        this.infoLogger = "null".equals(Config.getBaseConfig(main).getInfoLogPath(main))
                 ? createLoggerForConsole(main, "io.supertokens.Info")
                 : createLoggerForFile(main, Config.getBaseConfig(main).getInfoLogPath(main),
                 "io.supertokens.Info");
-        this.errorLogger = Config.getBaseConfig(main).getErrorLogPath(main).equals("null")
+        this.errorLogger = "null".equals(Config.getBaseConfig(main).getErrorLogPath(main))
                 ? createLoggerForConsole(main, "io.supertokens.Error")
                 : createLoggerForFile(main, Config.getBaseConfig(main).getErrorLogPath(main),
                 "io.supertokens.Error");

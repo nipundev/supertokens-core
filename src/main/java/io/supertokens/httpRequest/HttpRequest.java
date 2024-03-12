@@ -72,7 +72,7 @@ public class HttpRequest {
             }
         }
         String paramsStr = paramBuilder.toString();
-        if (!paramsStr.equals("")) {
+        if (!"".equals(paramsStr)) {
             paramsStr = paramsStr.substring(0, paramsStr.length() - 1);
             url = url + "?" + paramsStr;
         }

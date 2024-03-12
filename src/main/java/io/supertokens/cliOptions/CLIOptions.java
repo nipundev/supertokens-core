@@ -60,7 +60,7 @@ public class CLIOptions extends ResourceDistributor.SingletonResource {
                 hostTemp = curr.split(HOST_FILE_KEY)[1];
             } else if (curr.startsWith(FORCE_NO_IN_MEM_DB)) {
                 forceNoInMemoryDBTemp = true;
-            } else if (curr.equals(TEST_MODE)) {
+            } else if (TEST_MODE.equals(curr)) {
                 Main.isTesting = true;
             }
         }

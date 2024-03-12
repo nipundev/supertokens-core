@@ -65,7 +65,7 @@ public class SignUpAPI extends WebserverAPI {
 
         String normalisedEmail = Utils.normaliseEmail(email);
 
-        if (password.equals("")) {
+        if ("".equals(password)) {
             throw new ServletException(new WebserverAPI.BadRequestException("Password cannot be an empty string"));
         }
 

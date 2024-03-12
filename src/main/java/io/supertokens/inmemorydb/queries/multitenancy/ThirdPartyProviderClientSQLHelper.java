@@ -62,7 +62,7 @@ public class ThirdPartyProviderClientSQLHelper {
                     }
                 }
                 String clientType = result.getString("client_type");
-                if (clientType.equals("")) {
+                if ("".equals(clientType)) {
                     clientType = null;
                 }
 

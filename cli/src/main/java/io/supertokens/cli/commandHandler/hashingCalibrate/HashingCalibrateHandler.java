@@ -34,14 +34,14 @@ public class HashingCalibrateHandler extends CommandHandler {
     @Override
     protected void doCommand(String installationDir, boolean viaInstaller, String[] args) {
         String alg = CLIOptionsParser.parseOption("--with_alg", args);
-        if (alg != null && alg.equalsIgnoreCase("bcrypt")) {
+        if (alg != null && "bcrypt".equalsIgnoreCase(alg)) {
             String targetTimePerHashMsStr = CLIOptionsParser.parseOption("--with_time_per_hash_ms", args);
             int targetTimePerHashMs = 300;
             if (targetTimePerHashMsStr != null) {
                 targetTimePerHashMs = Integer.parseInt(targetTimePerHashMsStr);
             }
             calibrateBCrypt(targetTimePerHashMs);
-        } else if (alg != null && alg.equalsIgnoreCase("argon2")) {
+        } else if (alg != null && "argon2".equalsIgnoreCase(alg)) {
             String targetTimePerHashMsStr = CLIOptionsParser.parseOption("--with_time_per_hash_ms", args);
             int targetTimePerHashMs = 300;
             if (targetTimePerHashMsStr != null) {

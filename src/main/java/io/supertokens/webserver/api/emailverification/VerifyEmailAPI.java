@@ -61,7 +61,7 @@ public class VerifyEmailAPI extends WebserverAPI {
         // used to be according to logic in https://github.com/supertokens/supertokens-core/issues/141
         // but then changed slightly when extracting this into its own recipe
 
-        if (!method.equals("token")) {
+        if (!"token".equals(method)) {
             throw new ServletException(new BadRequestException("Unsupported method for email verification"));
         }
 

@@ -56,11 +56,11 @@ public class ListUsersByAccountInfoAPI extends WebserverAPI {
         String thirdPartyUserId = InputParser.getQueryParamOrThrowError(req, "thirdPartyUserId", true);
 
         String doUnionOfAccountInfoStr = InputParser.getQueryParamOrThrowError(req, "doUnionOfAccountInfo", false);
-        if (!(doUnionOfAccountInfoStr.equals("false") || doUnionOfAccountInfoStr.equals("true"))) {
+        if (!("false".equals(doUnionOfAccountInfoStr) || "true".equals(doUnionOfAccountInfoStr))) {
             throw new ServletException(new BadRequestException(
                     "'doUnionOfAccountInfo' should be either 'true' or 'false'"));
         }
-        boolean doUnionOfAccountInfo = doUnionOfAccountInfoStr.equals("true");
+        boolean doUnionOfAccountInfo = "true".equals(doUnionOfAccountInfoStr);
 
         if (email != null) {
             email = Utils.normaliseEmail(email);

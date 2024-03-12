@@ -88,7 +88,7 @@ public class PathRouter extends WebserverAPI {
             }
         }
         for (WebserverAPI api : this.apis) {
-            if (api.getPath().equals("/")) {
+            if ("/".equals(api.getPath())) {
                 return api;
             }
         }

@@ -2315,12 +2315,12 @@ public class Start
             }
 
             boolean added;
-            if (recipeId.equals("emailpassword")) {
+            if ("emailpassword".equals(recipeId)) {
                 added = EmailPasswordQueries.addUserIdToTenant_Transaction(this, sqlCon, tenantIdentifier,
                         userId);
-            } else if (recipeId.equals("thirdparty")) {
+            } else if ("thirdparty".equals(recipeId)) {
                 added = ThirdPartyQueries.addUserIdToTenant_Transaction(this, sqlCon, tenantIdentifier, userId);
-            } else if (recipeId.equals("passwordless")) {
+            } else if ("passwordless".equals(recipeId)) {
                 added = PasswordlessQueries.addUserIdToTenant_Transaction(this, sqlCon, tenantIdentifier,
                         userId);
             } else {
@@ -2379,13 +2379,13 @@ public class Start
                     }
 
                     boolean removed;
-                    if (recipeId.equals("emailpassword")) {
+                    if ("emailpassword".equals(recipeId)) {
                         removed = EmailPasswordQueries.removeUserIdFromTenant_Transaction(this, sqlCon,
                                 tenantIdentifier, userId);
-                    } else if (recipeId.equals("thirdparty")) {
+                    } else if ("thirdparty".equals(recipeId)) {
                         removed = ThirdPartyQueries.removeUserIdFromTenant_Transaction(this, sqlCon, tenantIdentifier,
                                 userId);
-                    } else if (recipeId.equals("passwordless")) {
+                    } else if ("passwordless".equals(recipeId)) {
                         removed = PasswordlessQueries.removeUserIdFromTenant_Transaction(this, sqlCon, tenantIdentifier,
                                 userId);
                     } else {

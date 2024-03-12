@@ -53,7 +53,7 @@ public class Main {
                 throw e;
             }
             if (e instanceof QuitProgramException) {
-                if (!e.getMessage().equals("")) {
+                if (!"".equals(e.getMessage())) {
                     if (((QuitProgramException) e).exception != null) {
                         Logging.error(((QuitProgramException) e).exception);
                     }

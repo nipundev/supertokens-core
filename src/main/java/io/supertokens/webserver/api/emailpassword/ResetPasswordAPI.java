@@ -65,11 +65,11 @@ public class ResetPasswordAPI extends WebserverAPI {
 
         // logic according to https://github.com/supertokens/supertokens-core/issues/109
 
-        if (!method.equals("token")) {
+        if (!"token".equals(method)) {
             throw new ServletException(new WebserverAPI.BadRequestException("Unsupported method for password reset"));
         }
 
-        if (newPassword.equals("")) {
+        if ("".equals(newPassword)) {
             throw new ServletException(new WebserverAPI.BadRequestException("Password cannot be an empty string"));
         }
 
