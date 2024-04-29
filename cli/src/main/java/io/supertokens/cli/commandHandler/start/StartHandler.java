@@ -16,6 +16,7 @@
 
 package io.supertokens.cli.commandHandler.start;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.cli.Main;
 import io.supertokens.cli.OperatingSystem;
 import io.supertokens.cli.cliOptionsParsers.CLIOptionsParser;
@@ -100,7 +101,7 @@ public class StartHandler extends CommandHandler {
                         BufferedReader reader = new BufferedReader(in)) {
                     String line;
                     boolean success = false;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         Logging.info(line); // TODO: make error go to Logging.error and other go to Logging.info - later
                         if (line.startsWith("Started SuperTokens on")) {
                             success = true;
