@@ -16,6 +16,8 @@
 
 package io.supertokens.webserver;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import jakarta.servlet.ServletException;
 
 import java.net.MalformedURLException;
@@ -57,7 +59,7 @@ public class Utils {
         }
 
         try {
-            URL url = new URL("http://" + connectionUriDomain);
+            URL url = Urls.create("http://" + connectionUriDomain, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
 
             if (url.getPath() != null && url.getPath().length() > 0) {
                 throw new ServletException(new WebserverAPI.BadRequestException("connectionUriDomain is invalid"));
