@@ -103,7 +103,7 @@ public abstract class Utils extends Mockito {
                 currentReadingLine = reader.readLine();
             }
             String modifiedFileContent = originalFileContent.toString().replaceAll(oldStr, newStr);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("../../config.yaml"))) {
+            try (BufferedWriter writer = Files.newBufferedWriter("../../config.yaml".toPath())) {
                 writer.write(modifiedFileContent);
             }
         }
@@ -124,7 +124,7 @@ public abstract class Utils extends Mockito {
                 currentReadingLine = reader.readLine();
             }
             String modifiedFileContent = originalFileContent.toString().replaceAll(oldStr, newStr);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("../../config.yaml"))) {
+            try (BufferedWriter writer = Files.newBufferedWriter("../../config.yaml".toPath())) {
                 writer.write(modifiedFileContent);
             }
         }

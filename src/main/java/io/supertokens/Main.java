@@ -358,7 +358,7 @@ public class Main {
         }
         boolean ignored = dotStarted.setWritable(true, false);
         this.startedFileName = fileName;
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(dotStarted))) { // overwrite mode
+        try (BufferedWriter writer = Files.newBufferedWriter(dotStarted.toPath())) { // overwrite mode
             writer.write(ProcessHandle.current().pid() + "\n" + Config.getBaseConfig(this).getBasePath());
         }
     }
