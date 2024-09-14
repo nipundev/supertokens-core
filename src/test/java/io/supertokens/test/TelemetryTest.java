@@ -18,6 +18,8 @@ package io.supertokens.test;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import io.supertokens.ProcessState;
 import io.supertokens.ProcessState.PROCESS_STATE;
 import io.supertokens.cronjobs.telemetry.Telemetry;
@@ -135,7 +137,7 @@ public class TelemetryTest extends Mockito {
                                 return mockCon;
                             }
                         };
-                        return new URL(null, url, stubURLStreamHandler);
+                        return Urls.create(null, url, stubURLStreamHandler, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                     }
                 });
 
@@ -192,7 +194,7 @@ public class TelemetryTest extends Mockito {
                                     return mockCon;
                                 }
                             };
-                            return new URL(null, url, stubURLStreamHandler);
+                            return Urls.create(null, url, stubURLStreamHandler, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                         }
                     });
 
@@ -241,7 +243,7 @@ public class TelemetryTest extends Mockito {
                                     return mockCon;
                                 }
                             };
-                            return new URL(null, url, stubURLStreamHandler);
+                            return Urls.create(null, url, stubURLStreamHandler, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                         }
                     });
 

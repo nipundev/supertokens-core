@@ -16,6 +16,8 @@
 
 package io.supertokens.downloader;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,7 +52,7 @@ public class DownloaderRunnable implements Runnable {
     }
 
     private void doDownload() throws IOException {
-        URL url = new URL(urlStr);
+        URL url = Urls.create(urlStr, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
         String[] urlSplit = urlStr.split("/");
         String fileName = urlSplit[urlSplit.length - 1];
         String file = parentDir + (OperatingSystem.getOS() == OperatingSystem.OS.WINDOWS ? "\\" : "/") + fileName;
