@@ -18,6 +18,7 @@ package io.supertokens.test;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.ProcessState;
 import io.supertokens.cliOptions.CLIOptions;
 import io.supertokens.config.Config;
@@ -647,7 +648,7 @@ public class SuperTokensSaaSSecretTest {
 
         try (BufferedReader reader = new BufferedReader(
                 new FileReader(Config.getConfig(process.getProcess()).getInfoLogPath(process.getProcess())))) {
-            String currentReadingLine = reader.readLine();
+            String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             boolean found = false;
             while (currentReadingLine != null) {
                 if (currentReadingLine.contains("/recipe/signup")) {
@@ -655,7 +656,7 @@ public class SuperTokensSaaSSecretTest {
                     assertTrue(currentReadingLine.contains("Tenant(127.0.0.1, public, public)"));
                 }
 
-                currentReadingLine = reader.readLine();
+                currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             }
             assertTrue(found);
         }
