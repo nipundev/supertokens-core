@@ -18,6 +18,8 @@ package io.supertokens.cli.httpRequest;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,7 +67,7 @@ public class HTTPRequest {
             paramsStr = paramsStr.substring(0, paramsStr.length() - 1);
             url = url + "?" + paramsStr;
         }
-        URL obj = new URL(url);
+        URL obj = Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
         InputStream inputStream = null;
         HttpURLConnection con = null;
 

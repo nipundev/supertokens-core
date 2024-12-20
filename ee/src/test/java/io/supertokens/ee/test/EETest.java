@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import io.supertokens.ProcessState;
 import io.supertokens.ee.EEFeatureFlag;
 import io.supertokens.featureflag.EE_FEATURES;
@@ -450,7 +452,7 @@ public class EETest extends Mockito {
                                     return mockCon;
                                 }
                             };
-                            return new URL(null, url, stubURLStreamHandler);
+                            return Urls.create(null, url, stubURLStreamHandler, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                         }
                     });
             process.startProcess();
@@ -542,7 +544,7 @@ public class EETest extends Mockito {
                                     return mockCon;
                                 }
                             };
-                            return new URL(null, url, stubURLStreamHandler);
+                            return Urls.create(null, url, stubURLStreamHandler, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                         }
                     });
             process.startProcess();
@@ -1299,7 +1301,7 @@ public class EETest extends Mockito {
                                 return mockCon;
                             }
                         };
-                        return new URL(null, url, stubURLStreamHandler);
+                        return Urls.create(null, url, stubURLStreamHandler, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                     }
                 });
         process.startProcess();

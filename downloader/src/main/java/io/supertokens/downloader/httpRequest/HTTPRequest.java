@@ -16,6 +16,8 @@
 
 package io.supertokens.downloader.httpRequest;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import io.supertokens.downloader.Main;
 import io.supertokens.downloader.exception.QuitProgramException;
 
@@ -57,7 +59,7 @@ public class HTTPRequest {
 
     private static String makeGETRequest(String url, Integer version)
             throws IOException, HTTPResponseException {
-        URL obj = new URL(url);
+        URL obj = Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
         InputStream inputStream = null;
         HttpURLConnection con = null;
 
