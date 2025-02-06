@@ -2,6 +2,7 @@ package io.supertokens.ee.test.httpRequest;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.Main;
 
 import java.io.*;
@@ -90,7 +91,7 @@ public class HttpRequestForTesting {
             StringBuilder response = new StringBuilder();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 String inputLine;
-                while ((inputLine = in.readLine()) != null) {
+                while ((inputLine = BoundedLineReader.readLine(in, 5_000_000)) != null) {
                     response.append(inputLine);
                 }
             }
@@ -159,7 +160,7 @@ public class HttpRequestForTesting {
             StringBuilder response = new StringBuilder();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 String inputLine;
-                while ((inputLine = in.readLine()) != null) {
+                while ((inputLine = BoundedLineReader.readLine(in, 5_000_000)) != null) {
                     response.append(inputLine);
                 }
             }

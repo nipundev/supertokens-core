@@ -18,6 +18,7 @@ package io.supertokens.test;
 
 import ch.qos.logback.classic.Logger;
 import com.google.gson.JsonObject;
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.ProcessState;
 import io.supertokens.ProcessState.EventAndException;
 import io.supertokens.ProcessState.PROCESS_STATE;
@@ -396,13 +397,13 @@ public class LoggingTest {
     private static boolean fileContainsString(ByteArrayOutputStream log, String value) throws IOException {
         boolean containsString = false;
         try (BufferedReader reader = new BufferedReader(new StringReader(log.toString()))) {
-            String currentReadingLine = reader.readLine();
+            String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             while (currentReadingLine != null) {
                 if (currentReadingLine.contains(value)) {
                     containsString = true;
                     break;
                 }
-                currentReadingLine = reader.readLine();
+                currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             }
         }
         return containsString;

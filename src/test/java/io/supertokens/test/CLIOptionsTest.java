@@ -16,6 +16,7 @@
 
 package io.supertokens.test;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.ProcessState.EventAndException;
 import io.supertokens.ProcessState.PROCESS_STATE;
 import io.supertokens.cliOptions.CLIOptions;
@@ -194,7 +195,7 @@ public class CLIOptionsTest {
 
             try (BufferedReader reader = new BufferedReader(
                     new FileReader(Config.getConfig(process.getProcess()).getInfoLogPath(process.getProcess())))) {
-                String currentReadingLine = reader.readLine();
+                String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
                 while (currentReadingLine != null) {
                     if (currentReadingLine.contains(process1.getProcess().getProcessId())) {
                         process1InfoLog = true;
@@ -217,13 +218,13 @@ public class CLIOptionsTest {
                         infoTest3Count++;
                     }
 
-                    currentReadingLine = reader.readLine();
+                    currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
                 }
             }
 
             try (BufferedReader reader = new BufferedReader(
                     new FileReader(Config.getConfig(process.getProcess()).getErrorLogPath(process.getProcess())))) {
-                String currentReadingLine = reader.readLine();
+                String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
                 while (currentReadingLine != null) {
                     if (currentReadingLine.contains(process1.getProcess().getProcessId())) {
                         process1ErrorLog = true;
@@ -245,7 +246,7 @@ public class CLIOptionsTest {
                         errrorTest3Count++;
                     }
 
-                    currentReadingLine = reader.readLine();
+                    currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
                 }
             }
 
