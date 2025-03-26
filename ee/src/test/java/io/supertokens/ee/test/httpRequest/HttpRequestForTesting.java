@@ -2,6 +2,8 @@ package io.supertokens.ee.test.httpRequest;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import io.supertokens.Main;
 
 import java.io.*;
@@ -16,7 +18,7 @@ public class HttpRequestForTesting {
     private static final int STATUS_CODE_ERROR_THRESHOLD = 400;
 
     private static URL getURL(Main main, String requestID, String url) throws MalformedURLException {
-        URL obj = new URL(url);
+        URL obj = Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
         if (Main.isTesting) {
             URL mock = HttpRequestMocking.getInstance(main).getMockURL(requestID, url);
             if (mock != null) {
