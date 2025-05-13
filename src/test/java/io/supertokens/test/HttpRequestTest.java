@@ -18,6 +18,7 @@ package io.supertokens.test;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.ProcessState;
 import io.supertokens.httpRequest.HttpRequest;
 import io.supertokens.httpRequest.HttpResponseException;
@@ -308,7 +309,7 @@ public class HttpRequestTest {
                 StringBuilder body = new StringBuilder();
                 try (BufferedReader reader = req.getReader()) {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         body.append(line);
                     }
                 }
@@ -325,7 +326,7 @@ public class HttpRequestTest {
                 StringBuilder body = new StringBuilder();
                 try (BufferedReader reader = req.getReader()) {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         body.append(line);
                     }
                 }
@@ -342,7 +343,7 @@ public class HttpRequestTest {
                 StringBuilder body = new StringBuilder();
                 try (BufferedReader reader = req.getReader()) {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         body.append(line);
                     }
                 }
@@ -397,7 +398,7 @@ public class HttpRequestTest {
                 StringBuilder body = new StringBuilder();
                 try (BufferedReader reader = req.getReader()) {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         body.append(line);
                     }
                 }
@@ -416,7 +417,7 @@ public class HttpRequestTest {
                 StringBuilder body = new StringBuilder();
                 try (BufferedReader reader = req.getReader()) {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         body.append(line);
                     }
                 }
@@ -434,7 +435,7 @@ public class HttpRequestTest {
                 StringBuilder body = new StringBuilder();
                 try (BufferedReader reader = req.getReader()) {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                         body.append(line);
                     }
                 }

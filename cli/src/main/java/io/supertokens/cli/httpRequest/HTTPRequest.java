@@ -18,6 +18,7 @@ package io.supertokens.cli.httpRequest;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.BoundedLineReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class HTTPRequest {
             StringBuilder response = new StringBuilder();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream))) {
                 String inputLine;
-                while ((inputLine = in.readLine()) != null) {
+                while ((inputLine = BoundedLineReader.readLine(in, 5_000_000)) != null) {
                     response.append(inputLine);
                 }
             }

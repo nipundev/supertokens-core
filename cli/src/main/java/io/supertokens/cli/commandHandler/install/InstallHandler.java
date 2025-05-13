@@ -16,6 +16,7 @@
 
 package io.supertokens.cli.commandHandler.install;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.cli.OperatingSystem;
 import io.supertokens.cli.Utils;
 import io.supertokens.cli.cliOptionsParsers.CLIOptionsParser;
@@ -85,7 +86,7 @@ public class InstallHandler extends CommandHandler {
                 BufferedReader reader = new BufferedReader(in)) {
             StringBuilder builder = new StringBuilder();
             String line = null;
-            while ((line = reader.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                 builder.append(line);
                 builder.append(System.getProperty("line.separator"));
             }

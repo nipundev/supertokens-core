@@ -1,5 +1,6 @@
 package io.supertokens.ee.test;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.Main;
 import io.supertokens.ee.EEFeatureFlag;
 import io.supertokens.pluginInterface.PluginInterfaceTesting;
@@ -97,10 +98,10 @@ public abstract class Utils extends Mockito {
 
         StringBuilder originalFileContent = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader("../../config.yaml"))) {
-            String currentReadingLine = reader.readLine();
+            String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             while (currentReadingLine != null) {
                 originalFileContent.append(currentReadingLine).append(System.lineSeparator());
-                currentReadingLine = reader.readLine();
+                currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             }
             String modifiedFileContent = originalFileContent.toString().replaceAll(oldStr, newStr);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("../../config.yaml"))) {
@@ -118,10 +119,10 @@ public abstract class Utils extends Mockito {
         String newStr = "\n" + key + ": " + value + "\n";
         StringBuilder originalFileContent = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader("../../config.yaml"))) {
-            String currentReadingLine = reader.readLine();
+            String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             while (currentReadingLine != null) {
                 originalFileContent.append(currentReadingLine).append(System.lineSeparator());
-                currentReadingLine = reader.readLine();
+                currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             }
             String modifiedFileContent = originalFileContent.toString().replaceAll(oldStr, newStr);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("../../config.yaml"))) {

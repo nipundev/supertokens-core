@@ -20,6 +20,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.ProcessState;
 import io.supertokens.test.httpRequest.HttpRequestForTesting;
 import io.supertokens.utils.SemVer;
@@ -63,10 +64,10 @@ public class ApiVersionAPITest {
         StringBuilder fileContent = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(
                 new FileReader("../supertokens-core/coreDriverInterfaceSupported.json"))) {
-            String currentLine = reader.readLine();
+            String currentLine = BoundedLineReader.readLine(reader, 5_000_000);
             while (currentLine != null) {
                 fileContent.append(currentLine).append(System.lineSeparator());
-                currentLine = reader.readLine();
+                currentLine = BoundedLineReader.readLine(reader, 5_000_000);
             }
         }
         JsonObject cdiSupported = new JsonParser().parse(fileContent.toString()).getAsJsonObject();

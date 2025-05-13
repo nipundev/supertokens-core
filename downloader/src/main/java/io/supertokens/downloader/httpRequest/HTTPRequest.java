@@ -16,6 +16,7 @@
 
 package io.supertokens.downloader.httpRequest;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.downloader.Main;
 import io.supertokens.downloader.exception.QuitProgramException;
 
@@ -78,7 +79,7 @@ public class HTTPRequest {
             StringBuilder response = new StringBuilder();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream))) {
                 String inputLine;
-                while ((inputLine = in.readLine()) != null) {
+                while ((inputLine = BoundedLineReader.readLine(in, 5_000_000)) != null) {
                     response.append(inputLine);
                 }
             }

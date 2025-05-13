@@ -16,6 +16,7 @@
 
 package io.supertokens.test;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.supertokens.ProcessState;
 import io.supertokens.ProcessState.PROCESS_STATE;
 import io.supertokens.config.Config;
@@ -550,13 +551,13 @@ public class LogLevelTest {
     private static boolean fileContainsString(ByteArrayOutputStream log, String value) throws IOException {
         boolean containsString = false;
         try (BufferedReader reader = new BufferedReader(new StringReader(log.toString()))) {
-            String currentReadingLine = reader.readLine();
+            String currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             while (currentReadingLine != null) {
                 if (currentReadingLine.contains(value)) {
                     containsString = true;
                     break;
                 }
-                currentReadingLine = reader.readLine();
+                currentReadingLine = BoundedLineReader.readLine(reader, 5_000_000);
             }
         }
         return containsString;
